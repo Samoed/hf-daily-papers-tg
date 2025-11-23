@@ -1,0 +1,28 @@
+name: Daily Papers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  uv-example:
+    name: python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run daily papers
+        env:
+          PYTHONPATH: src
+          TG__BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG__CHANNEL_ID: ${{ secrets.TG_CHANNEL_ID }}
+          TG__ADMIN_USER_ID: ${{ secrets.TG_ADMIN_USER_ID }}
+        run: uv run src/hf_daily_papers_tg/commands/daily_papers.py
