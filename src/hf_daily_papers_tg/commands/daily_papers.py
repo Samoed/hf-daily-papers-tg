@@ -22,9 +22,9 @@ async def send_daily_papers_update(bot: Bot, settings: Settings) -> None:
         chat_id=settings.tg.admin_user_id,
         text="Starting daily papers update...",
     )
-    today = datetime.datetime.now(settings.timezone).date()
-    papers = await get_papers(today, settings)
-    logger.info(f"Fetched {len(papers)} papers for date {today.isoformat()}")
+    yesterday = datetime.datetime.now(settings.timezone).date() - datetime.timedelta(days=1)
+    papers = await get_papers(yesterday, settings)
+    logger.info(f"Fetched {len(papers)} papers for date {yesterday.isoformat()}")
 
     for paper in papers:
         logger.info(f"Paper: {paper.paper.id}")
