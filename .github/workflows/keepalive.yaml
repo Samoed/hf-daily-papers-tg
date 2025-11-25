@@ -1,0 +1,24 @@
+name: Keep Repo Active
+
+on:
+  schedule:
+    # Every 30 days at 00:00 UTC
+    - cron: "0 0 */30 * *"
+  # scheduled ci's will be disabled after 60 days without commits
+  # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create empty commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git commit --allow-empty -m "chore: keepalive"
+          git push
