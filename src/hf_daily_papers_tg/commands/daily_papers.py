@@ -37,7 +37,7 @@ async def send_daily_papers_update(bot: ExtBot[Any], settings: Settings) -> None
             )
             await asyncio.sleep(0.05)  # additional delay to avoid hitting rate limits
         except Exception as e:
-            msg = f"Failed to send papers update. On paper {paper.paper.id}"
+            msg = f"Failed to send papers update. On paper {paper.paper.id} {e}"
             logger.exception(msg)
             await send_error_message(bot, settings.tg.admin_user_id, e, msg)
 
@@ -60,8 +60,9 @@ async def main(settings: Settings) -> None:
         try:
             await send_daily_papers_update(bot, settings)
         except Exception as e:
-            logger.exception("Failed to send papers update.")
-            await send_error_message(bot, settings.tg.admin_user_id, e)
+            msg = f"Failed to send papers update. {e}"
+            logger.exception(msg)
+            await send_error_message(bot, settings.tg.admin_user_id, e, msg)
 
 
 if __name__ == "__main__":

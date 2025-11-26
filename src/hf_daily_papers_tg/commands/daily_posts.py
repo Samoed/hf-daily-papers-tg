@@ -68,8 +68,9 @@ async def main(settings: Settings) -> None:
         try:
             await send_posts_update(bot, settings)
         except Exception as e:
-            logger.exception("Failed to send daily posts update.")
-            await send_error_message(bot, settings.tg.admin_user_id, e)
+            msg = f"Failed to send daily posts update. {e}"
+            logger.exception(msg)
+            await send_error_message(bot, settings.tg.admin_user_id, e, msg)
 
 
 if __name__ == "__main__":
