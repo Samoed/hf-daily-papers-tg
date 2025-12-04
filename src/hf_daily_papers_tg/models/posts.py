@@ -33,11 +33,11 @@ class Article(BaseModel):
     slug: str
     title: str
     upvotes: int
-    author: ArticleAuthor = Field(alias="authorData")
+    authors: list[ArticleAuthor] = Field(alias="authorsData")
 
     @property
     def hf_url(self) -> str:
-        return f"https://huggingface.co/blog/{self.author.name}/{self.slug}"
+        return f"https://huggingface.co/blog/{self.authors[0].name}/{self.slug}"
 
     @property
     def hf_hyperlink(self) -> str:
