@@ -13,7 +13,7 @@ class Blog(BaseModel):
 
     @property
     def hf_url(self) -> str:
-        return f"https://huggingface.co/blogs/{self.slug}"
+        return f"https://huggingface.co/blog/{self.slug}"
 
     @property
     def hf_hyperlink(self) -> str:
