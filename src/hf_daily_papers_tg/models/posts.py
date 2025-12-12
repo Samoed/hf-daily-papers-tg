@@ -10,10 +10,11 @@ class Blog(BaseModel):
     title: str
     upvotes: int
     published_at: datetime = Field(alias="publishedAt")
+    url: str
 
     @property
     def hf_url(self) -> str:
-        return f"https://huggingface.co/blog/{self.slug}"
+        return f"https://huggingface.co{self.url}"
 
     @property
     def hf_hyperlink(self) -> str:
