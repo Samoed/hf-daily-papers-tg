@@ -37,3 +37,5 @@ Use a scheduler (cron/systemd/GitHub Actions) to run the commands. The bot uses 
 ## Development
 - Format/lint: `make format`
 - Type-check: `make typecheck`
+
+HuggingFace API reference https://huggingface.co/spaces/huggingface/openapi or https://huggingface-openapi.hf.space/

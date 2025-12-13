@@ -1,0 +1,32 @@
+name: Weekly Trends
+
+on:
+  schedule:
+    # Runs at 07:00 UTC (10:00 AM Moscow time, UTC+3)
+    # On Sunday
+    - cron: '0 7 * * 0'
+  workflow_dispatch:
+
+jobs:
+  weekly_trends:
+    name: python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run weekly trends
+        env:
+          PYTHONPATH: src
+          TG__BOT_TOKEN: ${{ secrets.TG__BOT_TOKEN }}
+          TG__CHANNEL_ID: ${{ secrets.TG__CHANNEL_ID }}
+          TG__ADMIN_USER_ID: ${{ secrets.TG__ADMIN_USER_ID }}
+        run: uv run src/hf_daily_papers_tg/commands/weekly_trends.py

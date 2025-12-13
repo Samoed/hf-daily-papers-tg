@@ -8,7 +8,6 @@ from hf_daily_papers_tg.settings import Settings
 
 
 async def get_blog_posts(date: datetime.date, settings: Settings) -> list[Blog]:
-    """Placeholder for get_blogs function."""
     url = f"{settings.hf_api_base_url}/blog"
     async with AsyncClient() as client:
         blogs_data = await fetch_json_with_retries(client, url)
