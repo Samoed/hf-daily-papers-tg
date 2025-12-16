@@ -53,7 +53,7 @@ async def main(settings: Settings) -> None:
         settings.tg.bot_token,
         rate_limiter=AIORateLimiter(
             # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Avoiding-flood-limits
-            overall_max_rate=FloodLimit.MESSAGES_PER_MINUTE_PER_GROUP - 1,
+            overall_max_rate=FloodLimit.MESSAGES_PER_MINUTE_PER_GROUP - 3,
             max_retries=2,
         ),
     ) as bot:
