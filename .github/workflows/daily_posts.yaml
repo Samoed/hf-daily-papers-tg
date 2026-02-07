@@ -3,7 +3,7 @@ name: Daily Posts
 on:
   schedule:
     # Runs at 06:55 UTC (9:55 AM Moscow time, UTC+3) every day
-    - cron: '55 6 * * *'
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 jobs:
