@@ -40,7 +40,7 @@ async def send_daily_papers_update(bot: ExtBot[Any], settings: Settings) -> None
                     parse_mode=ParseMode.HTML,
                 )
             )
-            await asyncio.sleep(0.05)  # additional delay to avoid hitting rate limits
+            await asyncio.sleep(0.5)  # additional delay to avoid hitting rate limits
         except Exception as e:
             msg = f"Failed to send papers update. On paper {paper.paper.id} {e}"
             logger.exception(msg)
