@@ -6,6 +6,7 @@ from telegram import Bot
 from telegram.constants import ParseMode
 
 from hf_daily_papers_tg.commands.error_message import send_error_message
+from hf_daily_papers_tg.commands.utils import send_with_retries
 from hf_daily_papers_tg.parsers.posts import get_blog_posts, get_community_posts
 from hf_daily_papers_tg.settings import Settings
 
@@ -18,9 +19,11 @@ logger = logging.getLogger(__name__)
 
 async def send_posts_update(bot: Bot, settings: Settings) -> None:
     """Send daily papers update to the channel."""
-    await bot.send_message(
-        chat_id=settings.tg.admin_user_id,
-        text="Starting daily posts update...",
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.admin_user_id,
+            text="Starting daily posts update...",
+        )
     )
     yesterday = datetime.datetime.now(settings.timezone).date() - datetime.timedelta(days=1)
     logger.info("Starting daily posts update")
@@ -44,22 +47,28 @@ async def send_posts_update(bot: Bot, settings: Settings) -> None:
             message_lines.append(f"{idx}. {article.hf_hyperlink} - {article.upvotes} 🔼")
 
     if not message_lines:
-        await bot.send_message(
-            chat_id=settings.tg.admin_user_id,
-            text="No posts found for today.",
+        await send_with_retries(
+            lambda: bot.send_message(
+                chat_id=settings.tg.admin_user_id,
+                text="No posts found for today.",
+            )
         )
         return
 
-    await bot.send_message(
-        chat_id=settings.tg.channel_id,
-        text="\n".join(message_lines),
-        parse_mode=ParseMode.HTML,
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.channel_id,
+            text="\n".join(message_lines),
+            parse_mode=ParseMode.HTML,
+        )
     )
 
     logger.info("Finished daily posts update")
-    await bot.send_message(
-        chat_id=settings.tg.admin_user_id,
-        text="Finished daily posts update.",
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.admin_user_id,
+            text="Finished daily posts update.",
+        )
     )
 
 

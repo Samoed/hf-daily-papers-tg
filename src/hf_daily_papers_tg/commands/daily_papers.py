@@ -7,6 +7,7 @@ from telegram.constants import FloodLimit, ParseMode
 from telegram.ext import AIORateLimiter, ExtBot
 
 from hf_daily_papers_tg.commands.error_message import send_error_message
+from hf_daily_papers_tg.commands.utils import send_with_retries
 from hf_daily_papers_tg.parsers.papers import get_papers
 from hf_daily_papers_tg.settings import Settings
 
@@ -19,9 +20,11 @@ logger = logging.getLogger(__name__)
 
 async def send_daily_papers_update(bot: ExtBot[Any], settings: Settings) -> None:
     """Send daily papers update to the channel."""
-    await bot.send_message(
-        chat_id=settings.tg.admin_user_id,
-        text="Starting daily papers update...",
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.admin_user_id,
+            text="Starting daily papers update...",
+        )
     )
     yesterday = datetime.datetime.now(settings.timezone).date() - datetime.timedelta(days=1)
     papers = await get_papers(yesterday, settings)
@@ -30,10 +33,12 @@ async def send_daily_papers_update(bot: ExtBot[Any], settings: Settings) -> None
     for paper in papers:
         logger.info(f"Paper: {paper.paper.id}")
         try:
-            await bot.send_message(
-                chat_id=settings.tg.channel_id,
-                text=paper.format(),
-                parse_mode=ParseMode.HTML,
+            await send_with_retries(
+                lambda p=paper: bot.send_message(
+                    chat_id=settings.tg.channel_id,
+                    text=p.format(),
+                    parse_mode=ParseMode.HTML,
+                )
             )
             await asyncio.sleep(0.05)  # additional delay to avoid hitting rate limits
         except Exception as e:
@@ -42,9 +47,11 @@ async def send_daily_papers_update(bot: ExtBot[Any], settings: Settings) -> None
             await send_error_message(bot, settings.tg.admin_user_id, e, msg)
 
     logger.info("Finished daily papers update")
-    await bot.send_message(
-        chat_id=settings.tg.admin_user_id,
-        text="Finished daily papers update.",
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.admin_user_id,
+            text="Finished daily papers update.",
+        )
     )
 
 

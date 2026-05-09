@@ -5,6 +5,7 @@ from telegram import Bot
 from telegram.constants import ParseMode
 
 from hf_daily_papers_tg.commands.error_message import send_error_message
+from hf_daily_papers_tg.commands.utils import send_with_retries
 from hf_daily_papers_tg.parsers.trending import get_trending_datasets, get_trending_models, get_trending_spaces
 from hf_daily_papers_tg.settings import Settings
 
@@ -17,9 +18,11 @@ logger = logging.getLogger(__name__)
 
 async def send_weekly_tradings_update(bot: Bot, settings: Settings) -> None:
     """Send daily papers update to the channel."""
-    await bot.send_message(
-        chat_id=settings.tg.admin_user_id,
-        text="Starting weekly tradings update...",
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.admin_user_id,
+            text="Starting weekly tradings update...",
+        )
     )
 
     datasets = await get_trending_datasets(settings)
@@ -36,16 +39,20 @@ async def send_weekly_tradings_update(bot: Bot, settings: Settings) -> None:
     for idx, dataset in enumerate(datasets, start=1):
         message_lines.append(f"{idx}. {dataset.full_text()}")
 
-    await bot.send_message(
-        chat_id=settings.tg.channel_id,
-        text="\n".join(message_lines),
-        parse_mode=ParseMode.HTML,
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.channel_id,
+            text="\n".join(message_lines),
+            parse_mode=ParseMode.HTML,
+        )
     )
 
     logger.info("Finished weekly trends update")
-    await bot.send_message(
-        chat_id=settings.tg.admin_user_id,
-        text="Finished weekly trends update.",
+    await send_with_retries(
+        lambda: bot.send_message(
+            chat_id=settings.tg.admin_user_id,
+            text="Finished weekly trends update.",
+        )
     )
 
 
